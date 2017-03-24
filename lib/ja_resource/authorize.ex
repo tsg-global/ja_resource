@@ -1,6 +1,4 @@
 defmodule JaResource.Authorize do
-  use Behaviour
-
   @moduledoc """
   Provides the `handle_authorize/0` callback used to authorize the resource.
 
