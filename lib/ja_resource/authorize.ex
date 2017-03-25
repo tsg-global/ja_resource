@@ -1,6 +1,6 @@
 defmodule JaResource.Authorize do
   @moduledoc """
-  Provides the `handle_authorize/0` callback used to authorize the resource.
+  Provides the `handle_authorize/2` callback used to authorize the resource.
 
   This behaviour is used by all JaResource actions.
   """
@@ -8,7 +8,7 @@ defmodule JaResource.Authorize do
   @doc """
   Called before all the actions with the model. Useful for authorizing.
   """
-  @callback handle_authorize(Plug.Conn.t, JaResource.record) :: any
+  @callback handle_authorize(JaResource.record, Plug.Conn.t) :: any
 
   defmacro __using__(_) do
     quote do

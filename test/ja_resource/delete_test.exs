@@ -5,6 +5,7 @@ defmodule JaResource.DeleteTest do
 
   defmodule DefaultController do
     use Phoenix.Controller
+    use JaResource.Authorize
     use JaResource.Delete
     def repo, do: JaResourceTest.Repo
     def model, do: JaResourceTest.Post
@@ -12,6 +13,7 @@ defmodule JaResource.DeleteTest do
 
   defmodule CustomController do
     use Phoenix.Controller
+    use JaResource.Authorize
     use JaResource.Delete
     def repo, do: JaResourceTest.Repo
     def model, do: JaResourceTest.Post

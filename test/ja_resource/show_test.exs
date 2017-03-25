@@ -5,6 +5,7 @@ defmodule JaResource.ShowTest do
 
   defmodule DefaultController do
     use Phoenix.Controller
+    use JaResource.Authorize
     use JaResource.Show
     def repo, do: JaResourceTest.Repo
     def model, do: JaResourceTest.Post
@@ -12,6 +13,7 @@ defmodule JaResource.ShowTest do
 
   defmodule CustomController do
     use Phoenix.Controller
+    use JaResource.Authorize
     use JaResource.Show
     def repo, do: JaResourceTest.Repo
     def handle_show(conn, _id), do: send_resp(conn, 401, "")
