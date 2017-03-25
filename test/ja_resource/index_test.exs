@@ -5,6 +5,7 @@ defmodule JaResource.IndexTest do
 
   defmodule DefaultController do
     use Phoenix.Controller
+    use JaResource.Authorize
     use JaResource.Index
     def repo, do: JaResourceTest.Repo
     def model, do: JaResourceTest.Post
@@ -12,6 +13,7 @@ defmodule JaResource.IndexTest do
 
   defmodule CustomController do
     use Phoenix.Controller
+    use JaResource.Authorize
     use JaResource.Index
     def repo, do: JaResourceTest.Repo
     def handle_index(conn, _id), do: send_resp(conn, 401, "")
@@ -19,6 +21,7 @@ defmodule JaResource.IndexTest do
 
   defmodule QueryErrorController do
     use Phoenix.Controller
+    use JaResource.Authorize
     use JaResource.Index
     def repo, do: JaResourceTest.Repo
     def handle_index_query(_conn, _params),

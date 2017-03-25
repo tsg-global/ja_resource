@@ -5,6 +5,7 @@ defmodule JaResource.CreateTest do
 
   defmodule DefaultController do
     use Phoenix.Controller
+    use JaResource.Authorize
     use JaResource.Create
     def repo, do: JaResourceTest.Repo
     def model, do: JaResourceTest.Post
@@ -12,6 +13,7 @@ defmodule JaResource.CreateTest do
 
   defmodule ProtectedController do
     use Phoenix.Controller
+    use JaResource.Authorize
     use JaResource.Create
     def repo, do: JaResourceTest.Repo
     def handle_create(conn, _attrs), do: send_resp(conn, 401, "")
@@ -29,6 +31,7 @@ defmodule JaResource.CreateTest do
 
   defmodule CustomResponseController do
     use Phoenix.Controller
+    use JaResource.Authorize
     use JaResource.Create
     def repo, do: JaResourceTest.Repo
     def model, do: JaResourceTest.Post
@@ -40,6 +43,7 @@ defmodule JaResource.CreateTest do
 
   defmodule MultiCustomController do
     use Phoenix.Controller
+    use JaResource.Authorize
     use JaResource.Create
     def repo, do: JaResourceTest.Repo
     def handle_create(_, params) do
