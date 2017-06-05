@@ -73,6 +73,12 @@ defmodule JaResource.Index do
         where(query, [{String.to_existing_atom(attr), val}])
       end
 
+  Aborting a filter request can be done by returning an error tuple:
+
+      def filter(_conn, query, "bad_attr", val) do
+        {:error, "bad attribute"}
+      end
+
   Anything not explicitly matched by your callbacks will be ignored.
   """
   @callback filter(Plug.Conn.t, JaResource.records, String.t, String.t) :: JaResource.records
@@ -153,13 +159,20 @@ defmodule JaResource.Index do
     end
   end
 
+  defp apply_filters([], conn, acc, resource), do: acc
+  defp apply_filters([{key, value} | rest], conn, acc, resource) do
+    case resource.filter(conn, acc, key, value) do
+      {:error, _reason} = err -> err
+      acc ->
+        apply_filters(rest, conn, acc, resource)
+    end
+  end
+
   @doc false
   def filter(results, conn = %{params: %{"filter" => filters}}, resource) do
     filters
-    |> Map.keys
-    |> Enum.reduce(results, fn(k, acc) ->
-      resource.filter(conn, acc, k, filters[k])
-    end)
+    |> Map.to_list
+    |> apply_filters(conn, results, resource)
   end
   def filter(results, _conn, _controller), do: results
 
