@@ -127,12 +127,13 @@ defmodule JaResource.Index do
   def call(controller, conn) do
     controller.handle_authorize(controller.model(), conn)
 
-    conn
-    |> controller.handle_index(conn.params)
-    |> JaResource.Index.filter(conn, controller)
-    |> JaResource.Index.sort(conn, controller)
-    |> JaResource.Index.execute_query(conn, controller)
-    |> JaResource.Index.respond(conn, controller)
+    with results <- controller.handle_index(conn, conn.params),
+         {:ok, results} <- JaResource.Index.filter(results, conn, controller),
+         {:ok, results} <- JaResource.Index.sort(results, conn, controller) do
+      results
+      |> JaResource.Index.execute_query(conn, controller)
+      |> JaResource.Index.respond(conn, controller)
+    end
   end
 
   defmacro __using__(_) do
@@ -159,34 +160,43 @@ defmodule JaResource.Index do
     end
   end
 
-  defp apply_filters([], conn, acc, resource), do: acc
-  defp apply_filters([{key, value} | rest], conn, acc, resource) do
-    case resource.filter(conn, acc, key, value) do
+  defp apply_filters([], _conn, acc, _resource), do: {:ok, acc}
+  defp apply_filters([{key, value} | rest], conn, acc, controller) do
+    case controller.filter(conn, acc, key, value) do
       {:error, _reason} = err -> err
       acc ->
-        apply_filters(rest, conn, acc, resource)
+        apply_filters(rest, conn, acc, controller)
     end
   end
 
   @doc false
-  def filter(results, conn = %{params: %{"filter" => filters}}, resource) do
+  def filter(results, conn = %{params: %{"filter" => filters}}, controller) do
     filters
     |> Map.to_list
-    |> apply_filters(conn, results, resource)
+    |> apply_filters(conn, results, controller)
   end
   def filter(results, _conn, _controller), do: results
 
   @sort_regex ~r/(-?)(\S*)/
-  @doc false
-  def sort(results, conn = %{params: %{"sort" => fields}}, controller) do
-    fields
-    |> String.split(",")
-    |> Enum.reduce(results, fn(field, acc) ->
+  defp apply_sort([], conn, acc, controller), do: {:ok, acc}
+  defp apply_sort([field | rest], conn, acc, controller) do
+    result =
       case Regex.run(@sort_regex, field) do
         [_, "", field]  -> controller.sort(conn, acc, field, :asc)
         [_, "-", field] -> controller.sort(conn, acc, field, :desc)
       end
-    end)
+
+    case result do
+      {:error, _} = err -> err
+      acc -> apply_sort(rest, conn, acc, controller)
+    end
+  end
+
+  @doc false
+  def sort(results, conn = %{params: %{"sort" => fields}}, controller) do
+    fields
+    |> String.split(",")
+    |> apply_sort(conn, results, controller)
   end
   def sort(results, _conn, _controller), do: results
 
