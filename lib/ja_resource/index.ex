@@ -191,7 +191,7 @@ defmodule JaResource.Index do
     |> Map.to_list
     |> apply_filters(conn, results, controller)
   end
-  def filter(results, _conn, _controller), do: results
+  def filter(results, _conn, _controller), do: {:ok, results}
 
   @sort_regex ~r/(-?)(\S*)/
   defp apply_sort([], conn, acc, controller), do: {:ok, acc}
@@ -214,7 +214,7 @@ defmodule JaResource.Index do
     |> String.split(",")
     |> apply_sort(conn, results, controller)
   end
-  def sort(results, _conn, _controller), do: results
+  def sort(results, _conn, _controller), do: {:ok, results}
 
   @doc false
   def execute_query(%Plug.Conn{} = conn, _conn, _controller), do: conn
