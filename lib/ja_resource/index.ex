@@ -132,8 +132,11 @@ defmodule JaResource.Index do
          {:ok, results} <- JaResource.Index.sort(results, conn, controller) do
       results
       |> JaResource.Index.execute_query(conn, controller)
-      |> JaResource.Index.respond(conn, controller)
+    else
+      # only handle error cases
+      {:error, _} = err -> err
     end
+    |> JaResource.Index.respond(conn, controller)
   end
 
   defmacro __using__(_) do
