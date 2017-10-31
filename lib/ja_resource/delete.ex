@@ -45,6 +45,13 @@ defmodule JaResource.Delete do
       use JaResource.Repo
       use JaResource.Record
       @behaviour JaResource.Delete
+
+      def handle_invalid_delete(conn, errors) do
+        conn
+        |> put_status(:unprocessable_entity)
+        |> Phoenix.Controller.render(:errors, data: errors)
+      end
+
       def handle_delete(conn, nil), do: nil
       def handle_delete(conn, model) do
         model
@@ -70,14 +77,15 @@ defmodule JaResource.Delete do
   end
 
   @doc false
-  def respond(nil, conn), do: not_found(conn)
-  def respond(%Plug.Conn{} = conn, _old_conn), do: conn
-  def respond({:ok, %{} = map}, conn), do: deleted(conn, Map.fetch(map, controller.atom()))
-  def respond({:ok, _model}, conn), do: deleted(conn)
-  def respond({:error, _name, errors, _changes}, conn), do: invalid(conn, errors)
-  def respond({:errors, errors}, conn), do: invalid(conn, errors)
-  def respond({:error, errors}, conn), do: invalid(conn, errors)
-  def respond(_model, conn), do: deleted(conn)
+  def respond(nil, conn, _controller), do: not_found(conn)
+  def respond(%Plug.Conn{} = conn, _old_conn, _controller), do: conn
+  def respond({:ok, %{} = map}, conn, controller), do: deleted(conn, Map.fetch(map, controller.atom()))
+  def respond({:ok, _model}, conn, _controller), do: deleted(conn)
+  def respond({:error, _name, errors, _changes}, conn, _controller), do: invalid(conn, errors)
+  def respond({:errors, errors}, conn, _controller), do: invalid(conn, errors)
+  def respond({:error, errors}, conn, _controller), do: invalid(conn, errors)
+  # Do not quietly handle unknown cases
+  #def respond(_model, conn, _controller), do: deleted(conn)
 
   defp not_found(conn) do
     conn
@@ -87,11 +95,5 @@ defmodule JaResource.Delete do
   defp deleted(conn) do
     conn
     |> send_resp(:no_content, "")
-  end
-
-  defp invalid(conn, errors) do
-    conn
-    |> put_status(:unprocessable_entity)
-    |> Phoenix.Controller.render(:errors, data: errors)
   end
 end
