@@ -219,7 +219,7 @@ defmodule JaResource.Index do
 
   defp apply_filters([], _conn, acc, _controller), do: {:ok, acc}
   defp apply_filters([{key, value} | rest], conn, acc, controller) do
-    {key, value} = controller.transform_filter({key, value})
+    {key, value} = controller.transform_filter(conn, {key, value})
     case controller.filter(conn, acc, key, value) do
       {:error, _reason} = err -> err
       acc ->
@@ -237,7 +237,7 @@ defmodule JaResource.Index do
 
   defp apply_rejects([], _conn, acc, _controller), do: {:ok, acc}
   defp apply_rejects([{key, value} | rest], conn, acc, controller) do
-    {key, value} = controller.transform_filter({key, value})
+    {key, value} = controller.transform_filter(conn, {key, value})
     case controller.reject(conn, acc, key, value) do
       {:error, _reason} = err -> err
       acc ->
