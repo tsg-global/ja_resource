@@ -196,6 +196,9 @@ defmodule JaResource.Index do
       def handle_index(conn, params), do: records(conn)
       defoverridable [handle_index: 2]
 
+      def transform_filter(conn, {key, value}), do: {key, value}
+      defoverridable [transform_filter: 2]
+
       def respond_to_index_error(conn, errors) do
         conn
         |> put_status(:internal_server_error)
@@ -214,8 +217,9 @@ defmodule JaResource.Index do
     end
   end
 
-  defp apply_filters([], _conn, acc, _resource), do: {:ok, acc}
+  defp apply_filters([], _conn, acc, _controller), do: {:ok, acc}
   defp apply_filters([{key, value} | rest], conn, acc, controller) do
+    {key, value} = controller.transform_filter({key, value})
     case controller.filter(conn, acc, key, value) do
       {:error, _reason} = err -> err
       acc ->
@@ -231,8 +235,9 @@ defmodule JaResource.Index do
   end
   def filter(results, _conn, _controller), do: {:ok, results}
 
-  defp apply_rejects([], _conn, acc, _resource), do: {:ok, acc}
+  defp apply_rejects([], _conn, acc, _controller), do: {:ok, acc}
   defp apply_rejects([{key, value} | rest], conn, acc, controller) do
+    {key, value} = controller.transform_filter({key, value})
     case controller.reject(conn, acc, key, value) do
       {:error, _reason} = err -> err
       acc ->
