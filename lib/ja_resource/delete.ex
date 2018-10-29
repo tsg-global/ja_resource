@@ -41,7 +41,7 @@ defmodule JaResource.Delete do
   @callback handle_delete(Plug.Conn.t, JaResource.record) :: Plug.Conn.t | JaResource.record | nil
 
   defmacro __using__(_) do
-    quote do
+    quote location: :keep do
       use JaResource.Repo
       use JaResource.Record
       @behaviour JaResource.Delete

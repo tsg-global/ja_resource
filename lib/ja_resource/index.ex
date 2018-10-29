@@ -183,7 +183,7 @@ defmodule JaResource.Index do
   end
 
   defmacro __using__(_) do
-    quote do
+    quote location: :keep do
       import Plug.Conn
       use JaResource.Repo
       use JaResource.Records

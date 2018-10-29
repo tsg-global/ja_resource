@@ -66,7 +66,7 @@ defmodule JaResource.Update do
   @callback render_update(Plug.Conn.t, JaResource.record) :: Plug.Conn.t
 
   defmacro __using__(_) do
-    quote do
+    quote location: :keep do
       use JaResource.Record
       use JaResource.Attributes
       @behaviour JaResource.Update

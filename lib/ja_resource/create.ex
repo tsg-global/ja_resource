@@ -56,7 +56,7 @@ defmodule JaResource.Create do
   @callback render_create(Plug.Conn.t, JaResource.record) :: Plug.Conn.t
 
   defmacro __using__(_) do
-    quote do
+    quote location: :keep do
       @behaviour JaResource.Create
       use JaResource.Repo
       use JaResource.Attributes

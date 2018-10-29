@@ -41,7 +41,7 @@ defmodule JaResource.Show do
   @callback handle_show(Plug.Conn.t, JaResource.id) :: Plug.Conn.t | JaResource.record
 
   defmacro __using__(_) do
-    quote do
+    quote location: :keep do
       use JaResource.Record
       use JaResource.Serializable
       @behaviour JaResource.Show

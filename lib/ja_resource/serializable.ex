@@ -48,7 +48,7 @@ defmodule JaResource.Serializable do
   @callback serialization_opts(Plug.Conn.t, map, struct | list) :: Keyword.t
 
   defmacro __using__(_) do
-    quote do
+    quote location: :keep do
       @behaviour JaResource.Serializable
 
       def serialization_opts(_conn, %{"fields" => f, "include" => i}, _model_or_models),

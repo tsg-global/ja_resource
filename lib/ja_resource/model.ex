@@ -21,7 +21,7 @@ defmodule JaResource.Model do
   @callback model() :: module
 
   defmacro __using__(_) do
-    quote do
+    quote location: :keep do
       @behaviour JaResource.Model
       use JaResource.Authorize
 

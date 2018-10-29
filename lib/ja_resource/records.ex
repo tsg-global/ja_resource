@@ -33,7 +33,7 @@ defmodule JaResource.Records do
   @callback records(Plug.Conn.t) :: Plug.Conn.t | JaResource.records
 
   defmacro __using__(_) do
-    quote do
+    quote location: :keep do
       use JaResource.Model
       @behaviour JaResource.Records
 
