@@ -1,5 +1,5 @@
 defmodule JaResource.Index do
-  import Plug.Conn, only: [put_status: 2]
+  import Plug.Conn
 
   @moduledoc """
   Provides `handle_index/2`, `filter/4`, `reject/4` and `sort/4` callbacks.
@@ -184,6 +184,7 @@ defmodule JaResource.Index do
 
   defmacro __using__(_) do
     quote do
+      import Plug.Conn
       use JaResource.Repo
       use JaResource.Records
       use JaResource.Serializable
